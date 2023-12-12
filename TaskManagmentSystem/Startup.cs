@@ -6,44 +6,52 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using TaskManagmentSystem.Models;
 
-
-namespace TaskManagmentSystem;
-
-
-public class Startup
+namespace TaskManagmentSystem
 {
-    public Startup(IConfiguration configuration)
+    public class Startup
     {
-        Configuration = configuration;
-    }
-
-    public IConfiguration Configuration { get; }
-
-    public void ConfigureServices(IServiceCollection services)
-    {
-        // Add services, configurations, and dependencies here
-
-        services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlServer(Configuration.GetConnectionString("Server=iashka; Database=TaskManagmentSystem; Integrated Security=true; TrustServerCertificate=true;")));
-
-        // Add other services, middleware, and configurations as needed
-    }
-
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-    {
-        // Configure middleware and request pipeline here
-
-        if (env.IsDevelopment())
+        public Startup(IConfiguration configuration)
         {
-            app.UseDeveloperExceptionPage();
-        }
-        else
-        {
-            // Configure error handling for production
-            app.UseExceptionHandler("/Home/Error");
-            app.UseHsts();
+            Configuration = configuration;
         }
 
-        // Configure other middleware and routing as needed
+        public IConfiguration Configuration { get; }
+
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            // Add other services, middleware, and configurations as needed
+            services.AddControllersWithViews(); // Add this line if you are using MVC
+        }
+
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Home/Error");
+                app.UseHsts();
+            }
+
+            // Configure other middleware and routing as needed
+
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
+
+            app.UseRouting();
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+            });
+        }
     }
 }

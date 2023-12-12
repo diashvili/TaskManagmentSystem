@@ -1,21 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using TaskManagmentSystem;
 
-using AppDbContext context = new();
-
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionstring = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionstring));
-
-CreateHostBuilder(args).Build().Run();
-
-static IHostBuilder CreateHostBuilder(string[] args) =>
-        Host.CreateDefaultBuilder(args)
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.UseStartup<Startup>();
-            });
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -26,15 +15,12 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.UseAuthorization();
 
 app.MapControllerRoute(
