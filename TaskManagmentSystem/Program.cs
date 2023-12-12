@@ -1,4 +1,21 @@
+using Microsoft.EntityFrameworkCore;
+using TaskManagmentSystem;
+
+using AppDbContext context = new();
+
 var builder = WebApplication.CreateBuilder(args);
+
+var connectionstring = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionstring));
+
+CreateHostBuilder(args).Build().Run();
+
+static IHostBuilder CreateHostBuilder(string[] args) =>
+        Host.CreateDefaultBuilder(args)
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseStartup<Startup>();
+            });
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
